@@ -6,13 +6,13 @@ import { GifsSearchResponse, Gif } from '../interfaces/gifs.interface';
   providedIn: 'root'
 })
 export class GifsService {
-  private _historial: string[] = [];
+  private _historial: string[] = [];//localStorage.getItem('historial')?.replace('["',"").replace('"]',"").split('","') || [];
   private apiKey: string = 'R4gdf0HfRqtAjj1he9ASnI5AAChk3MVR';
 
   public result: Gif[] = [];
 
   constructor(private http: HttpClient) {
-
+    this._historial = JSON.parse(localStorage.getItem('historial')!) || [];
   }
 
   get historial() {
@@ -24,6 +24,8 @@ export class GifsService {
       this._historial.unshift(query);
     }
     this._historial = this._historial.splice(0, 10);
+
+    localStorage.setItem('historial', JSON.stringify(this._historial));
 
     this.http.get<GifsSearchResponse>(`https://api.giphy.com/v1/gifs/search?api_key=${this.apiKey}&q=${query}&limit=10`)
       .subscribe((resp) => {
